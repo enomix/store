@@ -28,4 +28,10 @@ public class ProductServiceTests {
         }
     }
 
+    @Test
+    public void findById() {
+        Product product = productService.findById(10000017);
+        System.out.println(product);
+    }
+
 }

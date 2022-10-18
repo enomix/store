@@ -32,4 +32,10 @@ public class ProductMapperTests {
             System.out.println(product);
         }
     }
+
+    @Test
+    public void findById() {
+        Product product = productMapper.findById(10000017);
+        System.out.println(product);
+    }
 }
