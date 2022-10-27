@@ -5,12 +5,17 @@ import com.sp.store.entity.Product;
 import com.sp.store.mapper.CartMapper;
 import com.sp.store.mapper.ProductMapper;
 import com.sp.store.service.ICartService;
+import com.sp.store.service.ex.AccessDeniedException;
+import com.sp.store.service.ex.CartNotFoundException;
 import com.sp.store.service.ex.InsertException;
 import com.sp.store.service.ex.UpdateException;
+import com.sp.store.vo.CartVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * 处理购物车数据的实现类
@@ -63,5 +68,48 @@ public class CartServiceImpl implements ICartService {
         // -- 从查询结果中获取购物车数据的id
         // -- 从查询结果中取出原数量，与参数amount相加，得到新的数量
         // -- 执行更新数量
+    }
+
+    @Override
+    public List<CartVO> getVOByUid(Integer uid) {
+        List<CartVO> cartVOList = cartMapper.findVOByUid(uid);
+        return cartVOList;
+    }
+
+    @Override
+    public Integer addNum(Integer cid, Integer uid, String username) {
+        //根据参数cid查询购物车数据
+        Cart result = cartMapper.findByCid(cid);
+        if (result == null) {
+            throw new CartNotFoundException("尝试访问的购物车数据不存在");
+        }
+        //判断查询结果中的uid与参数uid是否不一致
+        if (!result.getUid().equals(uid)) {
+            throw new AccessDeniedException("非法访问");
+        }
+        //检查商品的数量是否大于多少
+        Integer num = result.getNum() + 1;
+        //创建当前时间对象, 作为modifiedTime
+        Date now = new Date();
+        Integer rows = cartMapper.updateNumByCid(cid, num, username, now);
+        if (rows != 1) {
+            throw new InsertException("修改商品数量时出现未知错误");
+        }
+
+        //返回新的数量
+        return num;
+    }
+
+    @Override
+    public List<CartVO> getVOByCids(Integer uid, Integer[] cids) {
+        List<CartVO> cartVOList = cartMapper.findVOByCids(cids);
+        Iterator<CartVO> iterator = cartVOList.iterator();
+        while (iterator.hasNext()) {
+            CartVO cartVO = iterator.next();
+            if (!cartVO.getUid().equals(uid)) {
+                iterator.remove();
+            }
+        }
+        return cartVOList;
     }
 }

@@ -2,6 +2,7 @@ package com.sp.store.mapper;
 
 import com.sp.store.entity.Address;
 import com.sp.store.entity.Cart;
+import com.sp.store.vo.CartVO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,5 +49,28 @@ public class CartMapperTests {
     public void findByUidAndPid() {
         Cart cart = cartMapper.findByUidAndPid(1, 2);
         System.out.println(cart);
+    }
+
+    @Test
+    public void findVOByUid() {
+        List<CartVO> voList = cartMapper.findVOByUid(1);
+        for (CartVO cartVO : voList) {
+            System.out.println(cartVO);
+        }
+    }
+
+    @Test
+    public void findByCid() {
+        Cart result = cartMapper.findByCid(4);
+        System.out.println(result);
+    }
+
+    @Test
+    public void findVOByCids() {
+        Integer[] cids = {1, 2, 3, 4, 5};
+        List<CartVO> cartVOList = cartMapper.findVOByCids(cids);
+        for (CartVO cartVO : cartVOList) {
+            System.out.println(cartVO);
+        }
     }
 }
