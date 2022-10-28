@@ -133,4 +133,25 @@ public class AddressServiceImpl implements IAddressService {
             throw new UpdateException("更新默认收货地址出现错误");
         }
     }
+
+    @Override
+    public Address getByAid(Integer aid, Integer uid) {
+        Address address = addressMapper.findByAid(aid);
+        if (address == null) {
+            throw new AddressNotFoundException("访问的收货地址数据不存在");
+        }
+        if (!address.getUid().equals(uid)) {
+            throw new AccessDeniedException("非法访问");
+        }
+
+        address.setProvinceCode(null);
+        address.setCityCode(null);
+        address.setAreaCode(null);
+        address.setCreatedUser(null);
+        address.setCreatedTime(null);
+        address.setModifiedUser(null);
+        address.setModifiedTime(null);
+
+        return address;
+    }
 }
